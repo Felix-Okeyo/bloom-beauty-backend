@@ -17,7 +17,7 @@ itsdangerous
 Jinja2
 Mako
 MarkupSafe
-packagin
+packagin==23.2
 PyJWT
 pytz
 Serializer
