@@ -8,7 +8,6 @@ Flask-JWT-Extended
 Flask-Migrate
 Flask-RBAC
 Flask-RESTful
-Flask-Script
 Flask-SQLAlchemy==3.0.2
 greenlet
 gunicorn
@@ -17,11 +16,9 @@ itsdangerous
 Jinja2
 Mako
 MarkupSafe
-packagin==23.2
+packagin
 PyJWT
 pytz
-Serializer
-simplejson
 six
 SQLAlchemy
 SQLAlchemy-serializer
