@@ -60,6 +60,7 @@ class Brand (db.Model, SerializerMixin):
     
     id = db.Column(db.Integer, primary_key = True)
     brand_name = db.Column(db.String(150), nullable =False)
+    brand_logo = db.Column(db.String(255), nullable =False)
     
     #relationships 
     product = db.relationship('Product', back_populates = 'brands')
