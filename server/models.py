@@ -9,8 +9,9 @@ metadata = MetaData(naming_convention={
 
 db = SQLAlchemy(metadata = metadata)
 
-class User(db.model, SerializerMixin):
+class User(db.Model, SerializerMixin):
     __tablename__ = 'users'
+    
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(50), nullable=False)
     last_name = db.Column(db.String(50), nullable=False)
@@ -20,18 +21,61 @@ class User(db.model, SerializerMixin):
     password = db.Column(db.String(100), nullable=False)
     telephone = db.Column(db.Integer, nullable=False)
     city_town = db.Column(db.String(100), nullable=False)
+    
+    #relationship
+    invoice = db.relationship('Invoice', back_populates = 'users')
+
 
 class Product(db.Model, SerializerMixin):
     __tablename__ = 'products'
+    
     id = db.Column(db.Integer, primary_key = True)
     image = db.Column(db.String(255), nullable=False)
     p_name = db.Column(db.String(255), nullable=False)
     description = db.Column(db.String(255), nullable=False)
     price = db.Column(db.Integer, nullable = False)
-    category = 
+    category = db.Column(db.Integer, db.ForeignKey('categories.id'), nullable = False)
+    brand = db.Column(db.Integer, db.ForeignKey('brands.id'), nullable = False)
+    created_at = db.Column(db.DateTime, default=datetime.now)
+    updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
+    
+    #relationships
+    categories = db.relationship('Category', back_populates = 'product')
+    brands = db.relationship('Brand', back_populates = 'product')
+    
+    invoice = db.relationship('Invoice', back_populates = 'products')
     
 class Category (db.Model, SerializerMixin):
     __tablename__ = 'categories'
+    
     id = db.Column(db.Integer, primary_key = True)
     cat_name = db.Column(db.String(150), nullable =False)
+    
+    #relationships
+    product = db.relationship('Product', back_populates = 'categories')
+    
+
+class Brand (db.Model, SerializerMixin):
+    __tablename__ = 'brands'
+    
+    id = db.Column(db.Integer, primary_key = True)
+    brand_name = db.Column(db.String(150), nullable =False)
+    
+    #relationships 
+    product = db.relationship('Product', back_populates = 'brands')
+    
+
+class Invoice (db.Model, SerializerMixin):
+    __tablename__ = 'invoices'
+    
+    id = db.Column(db.Integer, primary_key = True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable = False)
+    product_id = db.Column(db.Integer, db.ForeignKey('products.id'), nullable = False)
+    quantity = db.Column(db.Integer, nullable = False)
+    cost = db.Column(db.Integer, nullable = False)
+    created_at = db.Column(db.DateTime, default = datetime.now)
+    
+    #relationships
+    users = db.relationship('User', back_populates = 'invoice')
+    products = db.relationship('Product', back_populates = 'invoice')
     
