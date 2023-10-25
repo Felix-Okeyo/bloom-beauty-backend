@@ -9,7 +9,7 @@ Flask-Migrate
 Flask-RBAC
 Flask-RESTful
 Flask-Script
-Flask-SQLAlchemy
+Flask-SQLAlchemy==3.0.2
 greenlet
 gunicorn
 importlib-metadata
