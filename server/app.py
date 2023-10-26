@@ -157,7 +157,7 @@ class GetProducts(Resource):
             products.append(product_dict)
         return make_response(jsonify(products), 200)
 
-api.add_resource(ProfileResource, '/products')
+api.add_resource(GetProducts, '/products')
 
 class ProductById(Resource):
     def get(self, id):
