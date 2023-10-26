@@ -115,7 +115,7 @@ class ProfileResource(Resource):
             return make_response(jsonify(user_dict), 200)
         else:
             return make_response(jsonify({"error": "User not found"}),404)
-   
+    @jwt_required()
     def put(self, id):
         user = User.query.get_or_404(id)
         parser = reqparse.RequestParser()
@@ -130,7 +130,7 @@ class ProfileResource(Resource):
         db.session.commit()
         return {'message': 'User details updated successfully'}
 
-   
+    @jwt_required()
     def delete(self, id):
         user = User.query.get_or_404(id)
         db.session.delete(user)
@@ -156,13 +156,13 @@ class GetProducts(Resource):
             }
             products.append(product_dict)
         return make_response(jsonify(products), 200)
-    
+    @jwt_required()
     def post(self):
         data = request.get_json()
         
         #validate the incoming product data by ensuring it has all the required fields in the product instance
         if 'image' not in data or 'p_name' not in data or 'description' not in data or 'price' not in data or 'category' not in data or 'brand' not in data:
-            return {'message': 'Missing required feilds for the product your trying to add'}
+            return {'message': 'Missing required feilds for the product your are trying to add'}
         
         #create a new product instance
         new_product = Product(
@@ -241,6 +241,94 @@ class ProductById(Resource):
     
 api.add_resource(ProductById, '/products/<int:id>')
 
+class BrandsAvailable(Resource):
+    def get(self):
+               
+        brands = []
+        for brand in Brand.query.all():
+            brand_dict ={
+                "id": brand.id,
+                "brand_name": brand.brand_name,
+                "brand_logo": brand.brand_logo
+            }
+            brands.append(brand_dict)
+        return make_response(jsonify(brands), 200)
+    
+    @jwt_required()
+    def post(self):
+        data = request.get_json()
+        
+        #validate the incoming product data by ensuring it has all the required fields in the product instance
+        if 'brand_name' not in data or 'brand_logo' not in data:
+            return {'message': 'Missing required feilds for the brand your are trying to add'}
+        
+        #create a new product instance
+        new_brand = Brand(
+            brand_name = data['brand_name'],
+            brand_logo = data['brand_logo']
+        )
+        new_brand_dict = {
+            "id": new_brand.id,
+            "brand_name": new_brand.brand_name,
+            "brand_logo": new_brand.brand_logo
+            }
+        
+        #add the new product to the database
+        db.session.add(new_brand)
+        db.session.commit()
+        
+        #respond with the success message
+        return make_response(jsonify(new_brand_dict), 200)  
+
+api.add_resource(BrandsAvailable, '/brands')
+
+class BrandsById(Resource):
+    @jwt_required()
+    def get(self, id):
+        brand = Brand.query.filter_by(id=id).first()
+        if brand:
+            brand_dict ={
+                "id": brand.id,
+                "brand_name": brand.brand_name,
+                "brand_logo": brand.brand_logo
+            }
+            return make_response(jsonify(brand_dict), 200)
+        else:
+            return make_response(jsonify({"error": "Brand not found"}),404)
+        
+    @jwt_required()
+    def patch(self, id):
+        brand = Brand.query.filter_by(id=id).first()
+        data = request.get_json()
+        
+        if brand:
+            for attr in data:
+                setattr(brand, attr, data[attr])
+            
+            db.session.add(brand)
+            db.session.commit()
+            
+            response_body = {
+                "id": brand.id,
+                "brand_name": brand.brand_name,
+                "brand_image": brand.brand_logo
+            }
+            return response_body, 201
+        else:
+            return make_response(jsonify({"error": "Brand not found"}),404)
+        
+    @jwt_required()
+    def delete (self, id):
+        brand = Brand.query.filter_by(id=id).first()
+        db.session.delete(brand)
+        db.session.commit()
+        return {'message': 'Brand deleted successfully'}
+    
+api.add_resource(BrandsById, '/brands/<int:id>')
+
+class InvoicesResource(Resource):
+    @jwt_required()
+    def get()
 
 if __name__ == '__main__':
     app.run(port=5555)
