@@ -326,9 +326,9 @@ class BrandsById(Resource):
     
 api.add_resource(BrandsById, '/brands/<int:id>')
 
-#get all invoices
+#get all invoices by Id
 class InvoiceById(Resource):
-    # @jwt_required()
+    @jwt_required()
     def get(self, id):
         
         invoice = Invoice.query.filter_by(id=id).first()
