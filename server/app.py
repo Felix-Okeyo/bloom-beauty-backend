@@ -141,7 +141,6 @@ class ProfileResource(Resource):
 api.add_resource(ProfileResource, '/profile')
 
 class GetProducts(Resource):
-    
     def get(self):
                
         products = []
@@ -159,6 +158,56 @@ class GetProducts(Resource):
         return make_response(jsonify(products), 200)
 
 api.add_resource(ProfileResource, '/products')
+
+class ProductById(Resource):
+    def get(self, id):
+        product = Product.query.filter_by(id=id).first()
+        if product:
+            product_dict ={
+                "id": product.id,
+                "image": product.image,
+                "p_name": product.product_name,
+                "description": product.description,
+                "price": product.price,
+                "category": product.category,
+                "brand": product.brand,
+            }
+            return make_response(jsonify(product_dict), 200)
+        else:
+            return make_response(jsonify({"error": "Product not found"}),404)
+    @jwt_required()
+    def patch(self, id):
+        product = Product.query.filter_by(id=id).first()
+        data = request.get_json()
+        
+        if product:
+            for attr in data:
+                setattr(product, attr, data[attr])
+            
+            db.session.add(product)
+            db.session.commit()
+            
+            response_body = {
+                "id": product.id,
+                "image": product.image,
+                "p_name": product.product_name,
+                "description": product.description,
+                "price": product.price,
+                "category": product.category,
+                "brand": product.brand,
+            }
+            return response_body, 201
+        else:
+            return make_response(jsonify({"error": "Product not found"}),404)
+        
+    @jwt_required()
+    def delete (self, id):
+        product = Product.query.filter_by(id=id).first()
+        db.session.delete(product)
+        db.session.commit()
+        return {'message': 'Product deleted successfully'}
+    
+api.add_resource(ProductById, '/products/<int:id>')
 
 
 if __name__ == '__main__':
