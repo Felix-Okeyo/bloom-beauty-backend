@@ -138,7 +138,7 @@ class ProfileResource(Resource):
         return {'message': 'User profile deleted successfully'}  
     
 
-api.add_resource(ProfileResource, '/profile')
+api.add_resource(ProfileResource, '/profile/<int:id>')
 
 class GetProducts(Resource):
     def get(self):
@@ -148,7 +148,7 @@ class GetProducts(Resource):
             product_dict ={
                 "id": product.id,
                 "image": product.image,
-                "p_name": product.product_name,
+                "p_name": product.p_name,
                 "description": product.description,
                 "price": product.price,
                 "category": product.category,
@@ -156,6 +156,38 @@ class GetProducts(Resource):
             }
             products.append(product_dict)
         return make_response(jsonify(products), 200)
+    
+    def post(self):
+        data = request.get_json()
+        
+        #validate the incoming product data by ensuring it has all the required fields in the product instance
+        if 'image' not in data or 'p_name' not in data or 'description' not in data or 'price' not in data or 'category' not in data or 'brand' not in data:
+            return {'message': 'Missing required feilds for the product your trying to add'}
+        
+        #create a new product instance
+        new_product = Product(
+            image = data['image'],
+            p_name = data['p_name'],
+            description = data['description'],
+            price = data['price'],
+            category = data['category'],
+            brand = data['brand']
+        )
+        new_product_dict = {
+            "id": new_product.id,
+            "p_name": new_product.p_name,
+            "description": new_product.description,
+            "price": new_product.price,
+            "category": new_product.category,
+            "brand": new_product.brand
+        }
+        
+        #add the new product to the database
+        db.session.add(new_product)
+        db.session.commit()
+        
+        #respond with the success message
+        return make_response(jsonify(new_product_dict), 200)  
 
 api.add_resource(GetProducts, '/products')
 
@@ -166,7 +198,7 @@ class ProductById(Resource):
             product_dict ={
                 "id": product.id,
                 "image": product.image,
-                "p_name": product.product_name,
+                "p_name": product.p_name,
                 "description": product.description,
                 "price": product.price,
                 "category": product.category,
@@ -190,7 +222,7 @@ class ProductById(Resource):
             response_body = {
                 "id": product.id,
                 "image": product.image,
-                "p_name": product.product_name,
+                "p_name": product.p_name,
                 "description": product.description,
                 "price": product.price,
                 "category": product.category,
