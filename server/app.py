@@ -328,7 +328,24 @@ api.add_resource(BrandsById, '/brands/<int:id>')
 
 class InvoicesResource(Resource):
     @jwt_required()
-    def get()
+    def get(self):
+        
+        invoices = []
+        for invoice in Invoice.query.all():
+            invoice_dict ={
+                "id": invoice.id,
+                "user_id": invoice.user_id,
+                "product_id": invoice.product_id,
+                "quantity": invoice.quantity,
+                "cost": invoice.cost,
+                "created_at": invoice.created_at
+            }
+            invoices.append(invoice_dict)
+        return make_response(jsonify(invoices), 200)
+
+api.add_resource(InvoicesResource, '/invoices')
+
+
 
 if __name__ == '__main__':
     app.run(port=5555)

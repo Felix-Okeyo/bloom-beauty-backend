@@ -1,5 +1,5 @@
 from app import app, db
-from models import User, Product, Brand, Category, Invoice
+from models import User, Product, Brand, Category, Invoice, InvoiceProducts, Invoice
 from datetime import datetime
 from sqlalchemy.orm import sessionmaker
 
@@ -46,11 +46,19 @@ with app.app_context():
         db.session.add_all(product_list)
         
         print("🦸‍♀️ Seeding Invoices...")
-        invoice_1 = Invoice( user_id = 1, product_id = 1, quantity = 10, cost = 2000)
-        invoice_2 = Invoice( user_id = 2, product_id = 2, quantity = 10, cost = 1000)
+        invoice_1 = Invoice( users = user1, products = product_1, quantity = 10, cost = 2000)
+        invoice_2 = Invoice( users = user2, products = product_2, quantity = 10, cost = 1000)
         
         invoice_list =[invoice_1, invoice_2]
         db.session.add_all(invoice_list)
+        
+        print("🦸‍♀️ Seeding Invoice_Products...")
+        invoice_products_1 = InvoiceProducts(product_rl = product_1, invoice_rl = invoice_2)
+        invoice_products_2 = InvoiceProducts(product_rl = product_1, invoice_rl = invoice_2)
+        invoice_products_3 = InvoiceProducts(product_rl = product_1, invoice_rl = invoice_2)
+
+        invoice_products_list =[invoice_products_1, invoice_products_2, invoice_products_3]
+        db.session.add_all(invoice_products_list)
         
         
         db.session.commit()
