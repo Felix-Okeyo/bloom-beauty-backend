@@ -5,10 +5,11 @@ from sqlalchemy.orm import sessionmaker
 
 with app.app_context():
     def delete_data():
-    #this deletes existing db data in columns 
+    # this deletes existing db data in columns 
         print("Delete_data...")
         User.query.delete()
         Product.query.delete()
+        Category.query.delete()
         Brand.query.delete()
         Invoice.query.delete()
         
@@ -35,14 +36,31 @@ with app.app_context():
         category_4 = Category(cat_name = "Make-up")
         
         category_list =[category_1, category_2, category_3, category_4]
-        db.session.add(category_list)
+        db.session.add_all(category_list)
         
         print("🦸‍♀️ Seeding Products...")
-        product_1 = Product(image ="image url for product 1", p_name = "Huddah lipstick 1", description = "A red lipstick", price = 200, category = category_1, brand = brand_1)
-        product_2 = Product (image ="image url for product 2", p_name = "Rihanna mascara 1", description = "A red mascara", price = 100, category = category_2, brand = brand_2)
+        product_1 = Product(image ="image url for product 1", p_name = "Huddah lipstick 1", description = "A red lipstick", price = 200, category = 1, brand = 1)
+        product_2 = Product (image ="image url for product 2", p_name = "Rihanna mascara 1", description = "A red mascara", price = 100, category = 2, brand = 2)
 
         product_list =[product_1, product_2]
-        db.session.add(product_list)
+        db.session.add_all(product_list)
         
-        print("🦸‍♀️ Seeding Products...")
+        print("🦸‍♀️ Seeding Invoices...")
+        invoice_1 = Invoice( user_id = 1, product_id = 1, quantity = 10, cost = 2000)
+        invoice_2 = Invoice( user_id = 2, product_id = 2, quantity = 10, cost = 1000)
         
+        invoice_list =[invoice_1, invoice_2]
+        db.session.add_all(invoice_list)
+        
+        
+        db.session.commit()
+
+if __name__ == "__main__":
+    with app.app_context():
+        db.app = app # bind the app to current SQLAlchemy instance
+        delete_data()
+        db.session.commit()
+        seed_data()
+        db.session.commit()
+        
+        print("🦸‍♀️ Done seeding!")
