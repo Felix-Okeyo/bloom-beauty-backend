@@ -3,7 +3,7 @@ from flask_migrate import Migrate
 from flask_restful import Api, Resource, reqparse
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity  
 from flask_cors import CORS
-from models import db, User, Product, Category, Brand, Invoice
+from models import db, User, Product, Category, Brand, Invoice, InvoiceProducts
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
@@ -326,24 +326,36 @@ class BrandsById(Resource):
     
 api.add_resource(BrandsById, '/brands/<int:id>')
 
-class InvoicesResource(Resource):
-    @jwt_required()
-    def get(self):
+#get all invoices
+class InvoiceById(Resource):
+    # @jwt_required()
+    def get(self, id):
         
-        invoices = []
-        for invoice in Invoice.query.all():
+        invoice = Invoice.query.filter_by(id=id).first()
+        
+        if invoice:
             invoice_dict ={
                 "id": invoice.id,
                 "user_id": invoice.user_id,
-                "product_id": invoice.product_id,
                 "quantity": invoice.quantity,
                 "cost": invoice.cost,
-                "created_at": invoice.created_at
+                "created_at": invoice.created_at,
+                "products": [
+                    {
+                        "id": invoice_product.product_rl.id,
+                        "image": invoice_product.product_rl.image,
+                        "product_name": invoice_product.product_rl.p_name,
+                        "price": invoice_product.product_rl.price,
+                        "category": invoice_product.product_rl.category 
+                    }
+                    for invoice_product in invoice.invoice_products
+                ]
             }
-            invoices.append(invoice_dict)
-        return make_response(jsonify(invoices), 200)
-
-api.add_resource(InvoicesResource, '/invoices')
+            return make_response(jsonify(invoice_dict), 200)
+        else:
+            return make_response(jsonify({"Error": "Invoice not found"}), 404)
+              
+api.add_resource(InvoiceById, '/invoices/<int:id>')
 
 
 
