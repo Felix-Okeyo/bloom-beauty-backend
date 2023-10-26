@@ -328,7 +328,7 @@ api.add_resource(BrandsById, '/brands/<int:id>')
 
 #get all invoices by Id
 class InvoiceById(Resource):
-    @jwt_required()
+    # @jwt_required()
     def get(self, id):
         
         invoice = Invoice.query.filter_by(id=id).first()
@@ -337,8 +337,6 @@ class InvoiceById(Resource):
             invoice_dict ={
                 "id": invoice.id,
                 "user_id": invoice.user_id,
-                "quantity": invoice.quantity,
-                "cost": invoice.cost,
                 "created_at": invoice.created_at,
                 "products": [
                     {

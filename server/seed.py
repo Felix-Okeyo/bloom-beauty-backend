@@ -6,12 +6,13 @@ from sqlalchemy.orm import sessionmaker
 with app.app_context():
     def delete_data():
     # this deletes existing db data in columns 
-        print("Delete_data...")
+        print("🦸 Delete_data...")
         User.query.delete()
         Product.query.delete()
         Category.query.delete()
         Brand.query.delete()
         Invoice.query.delete()
+        InvoiceProducts.query.delete()
         
     
     def seed_data():
@@ -48,16 +49,21 @@ with app.app_context():
         print("🦸‍♀️ Seeding Invoices...")
         invoice_1 = Invoice( users = user1, products = product_1, quantity = 10, cost = 2000)
         invoice_2 = Invoice( users = user2, products = product_2, quantity = 10, cost = 1000)
-        
-        invoice_list =[invoice_1, invoice_2]
+        invoice_3 = Invoice( users = user2, products = product_2, quantity = 10, cost = 1000)
+
+
+        invoice_list =[invoice_1, invoice_2, invoice_3]
         db.session.add_all(invoice_list)
         
         print("🦸‍♀️ Seeding Invoice_Products...")
-        invoice_products_1 = InvoiceProducts(product_rl = product_1, invoice_rl = invoice_2)
+        invoice_products_1 = InvoiceProducts(product_rl = product_1, invoice_rl = invoice_1)
         invoice_products_2 = InvoiceProducts(product_rl = product_1, invoice_rl = invoice_2)
-        invoice_products_3 = InvoiceProducts(product_rl = product_1, invoice_rl = invoice_2)
+        invoice_products_3 = InvoiceProducts(product_rl = product_1, invoice_rl = invoice_3)
+        invoice_products_4 = InvoiceProducts(product_rl = product_2, invoice_rl = invoice_1)
+        invoice_products_5 = InvoiceProducts(product_rl = product_2, invoice_rl = invoice_2)
+        invoice_products_6 = InvoiceProducts(product_rl = product_2, invoice_rl = invoice_3)
 
-        invoice_products_list =[invoice_products_1, invoice_products_2, invoice_products_3]
+        invoice_products_list =[invoice_products_1, invoice_products_2, invoice_products_3, invoice_products_4, invoice_products_5, invoice_products_6]   
         db.session.add_all(invoice_products_list)
         
         
