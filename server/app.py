@@ -135,8 +135,31 @@ class ProfileResource(Resource):
         user = User.query.get_or_404(id)
         db.session.delete(user)
         db.session.commit()
-        return {'message': 'User profile deleted successfully'}    
+        return {'message': 'User profile deleted successfully'}  
     
+
+api.add_resource(ProfileResource, '/profile')
+
+class GetProducts(Resource):
+    
+    def get(self):
+               
+        products = []
+        for product in Product.query.all():
+            product_dict ={
+                "id": product.id,
+                "image": product.image,
+                "p_name": product.product_name,
+                "description": product.description,
+                "price": product.price,
+                "category": product.category,
+                "brand": product.brand,
+            }
+            products.append(product_dict)
+        return make_response(jsonify(products), 200)
+
+api.add_resource(ProfileResource, '/products')
+
 
 if __name__ == '__main__':
     app.run(port=5555)
