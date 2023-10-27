@@ -326,14 +326,13 @@ class BrandsById(Resource):
     
 api.add_resource(BrandsById, '/brands/<int:id>')
 
-#get all invoices by Id
-class InvoiceById(Resource):
-    # @jwt_required()
-    def get(self, id):
+#get all invoices 
+class Invoices(Resource):
+    @jwt_required()
+    def get(self):
+        invoices = []
         
-        invoice = Invoice.query.filter_by(id=id).first()
-        
-        if invoice:
+        for invoice in Invoice.query.all():
             invoice_dict ={
                 "id": invoice.id,
                 "user_id": invoice.user_id,
@@ -349,13 +348,24 @@ class InvoiceById(Resource):
                     for invoice_product in invoice.invoice_products
                 ]
             }
-            return make_response(jsonify(invoice_dict), 200)
-        else:
-            return make_response(jsonify({"Error": "Invoice not found"}), 404)
-              
-api.add_resource(InvoiceById, '/invoices/<int:id>')
+            invoices.append(invoice_dict)
+        return make_response(jsonify(invoices), 200)
+    
+api.add_resource(Invoices, '/invoices')
 
+class Categories(Resource):
+    def get(self):
+        
+        categories = []
+        for category in Category.query.all():
+                category_dict = {
+                    "id": category.id,
+                    "name": category.cat_name
+                }
+                categories.append(category_dict)
+        return make_response(jsonify(categories), 200)
 
+api.add_resource(Categories, '/categories')
 
 if __name__ == '__main__':
     app.run(port=5555)

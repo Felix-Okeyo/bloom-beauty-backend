@@ -52,6 +52,7 @@ with app.app_context():
         invoice_3 = Invoice( users = user2, products = product_2, quantity = 10, cost = 1000)
 
 
+
         invoice_list =[invoice_1, invoice_2, invoice_3]
         db.session.add_all(invoice_list)
         
