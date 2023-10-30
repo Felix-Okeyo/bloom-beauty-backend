@@ -18,7 +18,7 @@ gunicorn
 importlib-resources
 itsdangerous
 Jinja2
-jsonschema=
+jsonschema
 Mako
 MarkupSafe
 packaging
