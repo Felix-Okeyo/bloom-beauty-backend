@@ -23,7 +23,7 @@ Mako
 MarkupSafe
 packaging
 PyJWT
-pyrsistent=
+pyrsistent
 python-dateutil
 pytz
 six
