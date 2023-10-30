@@ -9,6 +9,15 @@ metadata = MetaData(naming_convention={
 
 db = SQLAlchemy(metadata = metadata)
 
+class Role(db.Model, SerializerMixin):
+    __tablename__ = "roles"
+    id = db.Column(db.Integer, primary_key = True)
+    name = db.Column(db.String(50), nullable = False)
+    
+    
+    #Relationships
+    users = db.relationship("User", back_populates = 'roles')
+
 class User(db.Model, SerializerMixin):
     __tablename__ = 'users'
     
@@ -21,10 +30,11 @@ class User(db.Model, SerializerMixin):
     password = db.Column(db.String(100), nullable=False)
     telephone = db.Column(db.Integer, nullable=False)
     city_town = db.Column(db.String(100), nullable=False)
+    role_id = db.Column(db.Integer, db.ForeignKey('roles.id'), nullable = False)
     
     #relationship
     invoice = db.relationship('Invoice', back_populates = 'users')
-
+    roles = db.relationship('Role', back_populates = 'users')
 
 class Product(db.Model, SerializerMixin):
     __tablename__ = 'products'
@@ -42,9 +52,9 @@ class Product(db.Model, SerializerMixin):
     #relationships
     categories = db.relationship('Category', back_populates = 'product')
     brands = db.relationship('Brand', back_populates = 'product')
-    
     invoice = db.relationship('Invoice', back_populates = 'products')
-    
+    invoice_products = db.relationship('InvoiceProducts', back_populates = 'product_rl')
+   
 class Category (db.Model, SerializerMixin):
     __tablename__ = 'categories'
     
@@ -54,7 +64,6 @@ class Category (db.Model, SerializerMixin):
     #relationships
     product = db.relationship('Product', back_populates = 'categories')
     
-
 class Brand (db.Model, SerializerMixin):
     __tablename__ = 'brands'
     
@@ -65,7 +74,6 @@ class Brand (db.Model, SerializerMixin):
     #relationships 
     product = db.relationship('Product', back_populates = 'brands')
     
-
 class Invoice (db.Model, SerializerMixin):
     __tablename__ = 'invoices'
     
@@ -79,4 +87,18 @@ class Invoice (db.Model, SerializerMixin):
     #relationships
     users = db.relationship('User', back_populates = 'invoice')
     products = db.relationship('Product', back_populates = 'invoice')
+    invoice_products = db.relationship('InvoiceProducts', back_populates = 'invoice_rl')
+    
+
+class InvoiceProducts(db.Model, SerializerMixin):
+    __tablename__ = 'invoice_products'
+    id = db.Column(db.Integer, primary_key = True)
+    product_id = db.Column(db.Integer, db.ForeignKey('products.id'), nullable = False)
+    invoice_id = db.Column(db.Integer, db.ForeignKey('invoices.id'), nullable = False)
+    created_at = db.Column(db.DateTime, default=datetime.now)
+    updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
+    
+    #relationships 
+    product_rl = db.relationship('Product', back_populates = 'invoice_products')
+    invoice_rl = db.relationship('Invoice', back_populates = 'invoice_products')
     

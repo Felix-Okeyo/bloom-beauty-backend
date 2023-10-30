@@ -12,6 +12,7 @@ sqlalchemy-serializer = "*"
 gunicorn = "*"
 flask-jwt-extended = "*"
 flask-cors = "*"
+flask-bcrypt = "*"
 
 [dev-packages]
 
