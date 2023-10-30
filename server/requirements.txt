@@ -19,6 +19,7 @@ MarkupSafe
 packaging
 PyJWT
 pytz
+flask_bcrypt
 six
 SQLAlchemy
 SQLAlchemy-serializer
