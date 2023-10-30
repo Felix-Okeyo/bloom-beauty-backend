@@ -21,9 +21,48 @@ jwt = JWTManager(app)
 bcrypt = Bcrypt(app)
 app.json.compact = False
 
+api.init_app(app)
+
 ns = Namespace("/")
+api.add_namespace(ns)
 
+admin_only_model = api.model("Admin", {
+    "first_name": fields.String, 
+    "last_name": fields.String,
+    "email": fields.String
+})
 
+client_model = api.model("Client", {
+    "id": fields.Integer,
+    "first_name": fields.String,
+    "last_name": fields.String,
+    "username": fields.String,
+    "email": fields.String,
+    "ph_addess": fields.String,
+    "telephone": fields.String,
+    "city_town": fields.String 
+})
+
+client_only_model =api.model("Client Input", {
+    "username": fields.String,
+    "email": fields.String,
+    "password": fields.String
+})
+
+product_model = api.model("Product",{
+    "image": fields.String,
+    "p_name": fields.String,
+    "description": fields.String,
+    "price": fields.Integer,
+})
+
+categor_model = api.model("Category", {
+    "cat_name": fields.String,
+})
+   
+invoice                       
+                          
+                          
 class Home(Resource):
     def get(self):
         response_message = {
