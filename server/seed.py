@@ -16,6 +16,9 @@ with app.app_context():
         
     
     def seed_data():
+        print("🦸‍♀️ Seeding Invoice_Products...")
+        
+        role
         print("🦸 Seeding User data...")
         user1 =User(first_name="kenya", last_name="kwanza", username = "yudiye", email="kenyakwanza@mail.com", ph_address = "Statehouse Road, Kilimani", password="kwisha2023", telephone = "254712345678", city_town = "Nairobi")
         user2 =User(first_name="john", last_name="doe", username = "johndoe23", email="johndoe@mail.com", ph_address = "Muthurwa, Kamukunji", password="john2023", telephone = "254712345679", city_town = "Nairobi")

@@ -4,6 +4,8 @@ from flask_restful import Api, Resource, reqparse
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity  
 from flask_cors import CORS
 from models import db, User, Product, Category, Brand, Invoice, InvoiceProducts
+from flask_bcrypt import Bcrypt
+from flask_restx import Namespace, fields
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
@@ -16,6 +18,10 @@ migrate = Migrate(app, db)
 api = Api(app)
 CORS(app)
 jwt = JWTManager(app)
+bcrypt = Bcrypt(app)
+app.json.compact = False
+
+ns = Namespace("/")
 
 
 class Home(Resource):

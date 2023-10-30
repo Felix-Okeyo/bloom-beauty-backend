@@ -9,6 +9,13 @@ metadata = MetaData(naming_convention={
 
 db = SQLAlchemy(metadata = metadata)
 
+class Role(db.Model, SerializerMixin):
+    __tablename__ = "roles"
+    id = db.Column(db.Integer, primary_key = True)
+    name = db.Column(db.String(50), nullable = False)
+    
+    user = db.relationship("Users", back_populates = 'role')
+
 class User(db.Model, SerializerMixin):
     __tablename__ = 'users'
     
@@ -21,9 +28,11 @@ class User(db.Model, SerializerMixin):
     password = db.Column(db.String(100), nullable=False)
     telephone = db.Column(db.Integer, nullable=False)
     city_town = db.Column(db.String(100), nullable=False)
+    role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
     
     #relationship
     invoice = db.relationship('Invoice', back_populates = 'users')
+    role = db.relationship('Role', back_populates = 'user')
 
 class Product(db.Model, SerializerMixin):
     __tablename__ = 'products'
