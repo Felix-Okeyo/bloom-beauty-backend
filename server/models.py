@@ -14,7 +14,9 @@ class Role(db.Model, SerializerMixin):
     id = db.Column(db.Integer, primary_key = True)
     name = db.Column(db.String(50), nullable = False)
     
-    user = db.relationship("Users", back_populates = 'role')
+    
+    #Relationships
+    users = db.relationship("User", back_populates = 'roles')
 
 class User(db.Model, SerializerMixin):
     __tablename__ = 'users'
@@ -32,7 +34,7 @@ class User(db.Model, SerializerMixin):
     
     #relationship
     invoice = db.relationship('Invoice', back_populates = 'users')
-    role = db.relationship('Role', back_populates = 'user')
+    roles = db.relationship('Role', back_populates = 'users')
 
 class Product(db.Model, SerializerMixin):
     __tablename__ = 'products'
