@@ -4,8 +4,8 @@ from flask_restful import Api, Resource, reqparse
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity  
 from flask_cors import CORS
 from models import db, User, Product, Category, Brand, Invoice, InvoiceProducts
-from flask_bcrypt import Bcrypt
-from flask_restx import Namespace, fields
+# from flask_bcrypt import Bcrypt
+# from flask_restx import Namespace, fields
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
@@ -18,50 +18,7 @@ migrate = Migrate(app, db)
 api = Api(app)
 CORS(app)
 jwt = JWTManager(app)
-bcrypt = Bcrypt(app)
-app.json.compact = False
-
-api.init_app(app)
-
-ns = Namespace("/")
-api.add_namespace(ns)
-
-admin_only_model = api.model("Admin", {
-    "first_name": fields.String, 
-    "last_name": fields.String,
-    "email": fields.String
-})
-
-client_model = api.model("Client", {
-    "id": fields.Integer,
-    "first_name": fields.String,
-    "last_name": fields.String,
-    "username": fields.String,
-    "email": fields.String,
-    "ph_addess": fields.String,
-    "telephone": fields.String,
-    "city_town": fields.String 
-})
-
-client_only_model =api.model("Client Input", {
-    "username": fields.String,
-    "email": fields.String,
-    "password": fields.String
-})
-
-product_model = api.model("Product",{
-    "image": fields.String,
-    "p_name": fields.String,
-    "description": fields.String,
-    "price": fields.Integer,
-})
-
-categor_model = api.model("Category", {
-    "cat_name": fields.String,
-})
-   
-invoice                       
-                          
+                       
                           
 class Home(Resource):
     def get(self):
@@ -397,6 +354,31 @@ class Invoices(Resource):
         return make_response(jsonify(invoices), 200)
     
 api.add_resource(Invoices, '/invoices')
+
+#get invoice by ID
+class InvoiceById(Resource):
+     def get(self, id):
+        invoice = Invoice.query.filter_by(id=id).first()
+        if invoice:
+            invoice_dict ={
+                "id": invoice.id,
+                "user_id": invoice.user_id,
+                "created_at": invoice.created_at,
+                "products": [
+                    {
+                        "id": invoice_product.product_rl.id,
+                        "image": invoice_product.product_rl.image,
+                        "product_name": invoice_product.product_rl.p_name,
+                        "price": invoice_product.product_rl.price,
+                        "category": invoice_product.product_rl.category 
+                    }
+                    for invoice_product in invoice.invoice_products
+                ]
+            }
+            return make_response(jsonify(invoice_dict), 200)
+        else:
+            return make_response(jsonify({"error": "Invoice not found"}),404)
+api.add_resource(InvoiceById, '/invoices/<int:id>')
 
 class Categories(Resource):
     def get(self):
