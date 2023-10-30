@@ -103,7 +103,7 @@ api.add_resource(LoginResource, '/login')
 
 #Admin interface for users management
 class ProfileResource(Resource):
-    @jwt_required()
+    # @jwt_required()
     def get(self, id):
         user = User.query.get_or_404(id)
         if user:
@@ -121,7 +121,7 @@ class ProfileResource(Resource):
             return make_response(jsonify(user_dict), 200)
         else:
             return make_response(jsonify({"error": "User not found"}),404)
-    @jwt_required()
+    # @jwt_required()
     def put(self, id):
         user = User.query.get_or_404(id)
         parser = reqparse.RequestParser()
@@ -136,7 +136,7 @@ class ProfileResource(Resource):
         db.session.commit()
         return {'message': 'User details updated successfully'}
 
-    @jwt_required()
+    # @jwt_required()
     def delete(self, id):
         user = User.query.get_or_404(id)
         db.session.delete(user)
@@ -162,7 +162,7 @@ class GetProducts(Resource):
             }
             products.append(product_dict)
         return make_response(jsonify(products), 200)
-    @jwt_required()
+    # @jwt_required()
     def post(self):
         data = request.get_json()
         
@@ -213,7 +213,7 @@ class ProductById(Resource):
             return make_response(jsonify(product_dict), 200)
         else:
             return make_response(jsonify({"error": "Product not found"}),404)
-    @jwt_required()
+    # @jwt_required()
     def patch(self, id):
         product = Product.query.filter_by(id=id).first()
         data = request.get_json()
@@ -238,7 +238,7 @@ class ProductById(Resource):
         else:
             return make_response(jsonify({"error": "Product not found"}),404)
         
-    @jwt_required()
+    # @jwt_required()
     def delete (self, id):
         product = Product.query.filter_by(id=id).first()
         db.session.delete(product)
@@ -260,7 +260,7 @@ class BrandsAvailable(Resource):
             brands.append(brand_dict)
         return make_response(jsonify(brands), 200)
     
-    @jwt_required()
+    # @jwt_required()
     def post(self):
         data = request.get_json()
         
@@ -289,7 +289,7 @@ class BrandsAvailable(Resource):
 api.add_resource(BrandsAvailable, '/brands')
 
 class BrandsById(Resource):
-    @jwt_required()
+    # @jwt_required()
     def get(self, id):
         brand = Brand.query.filter_by(id=id).first()
         if brand:
@@ -302,7 +302,7 @@ class BrandsById(Resource):
         else:
             return make_response(jsonify({"error": "Brand not found"}),404)
         
-    @jwt_required()
+    # @jwt_required()
     def patch(self, id):
         brand = Brand.query.filter_by(id=id).first()
         data = request.get_json()
@@ -323,7 +323,7 @@ class BrandsById(Resource):
         else:
             return make_response(jsonify({"error": "Brand not found"}),404)
         
-    @jwt_required()
+    # @jwt_required()
     def delete (self, id):
         brand = Brand.query.filter_by(id=id).first()
         db.session.delete(brand)
@@ -334,7 +334,7 @@ api.add_resource(BrandsById, '/brands/<int:id>')
 
 #get all invoices 
 class Invoices(Resource):
-    @jwt_required()
+    # @jwt_required()
     def get(self):
         invoices = []
         
