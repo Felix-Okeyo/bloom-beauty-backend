@@ -19,6 +19,7 @@ with app.app_context():
         print("🦸‍♀️ Adding new data")
         
         print("🦸‍♀️ Seeding User Roles...")
+        #role id 1 is equalt to admin and 2 is client
         admin_role = Role(name='Admin')
         db.session.add(admin_role)
 
@@ -28,8 +29,8 @@ with app.app_context():
         db.session.commit()
 
         print("🦸 Seeding Users...")
-        user1 =User(first_name="kenya", last_name="kwanza", username = "yudiye", email="kenyakwanza@mail.com", ph_address = "Statehouse Road, Kilimani", password="kwisha2023", telephone = "254712345678", city_town = "Nairobi")
-        user2 =User(first_name="john", last_name="doe", username = "johndoe23", email="johndoe@mail.com", ph_address = "Muthurwa, Kamukunji", password="john2023", telephone = "254712345679", city_town = "Nairobi")
+        user1 =User(first_name="kenya", last_name="kwanza", username = "yudiye", email="kenyakwanza@mail.com", ph_address = "Statehouse Road, Kilimani", password="kwisha2023", telephone = "254712345678", city_town = "Nairobi", role_id = 1)
+        user2 =User(first_name="john", last_name="doe", username = "johndoe23", email="johndoe@mail.com", ph_address = "Muthurwa, Kamukunji", password="john2023", telephone = "254712345679", city_town = "Nairobi", role_id = 2)
 
         user_list =[user1, user2]
         db.session.add_all(user_list)

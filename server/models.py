@@ -30,7 +30,7 @@ class User(db.Model, SerializerMixin):
     password = db.Column(db.String(100), nullable=False)
     telephone = db.Column(db.Integer, nullable=False)
     city_town = db.Column(db.String(100), nullable=False)
-    role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
+    role_id = db.Column(db.Integer, db.ForeignKey('roles.id'), nullable = False)
     
     #relationship
     invoice = db.relationship('Invoice', back_populates = 'users')
