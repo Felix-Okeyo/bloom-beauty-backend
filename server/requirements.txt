@@ -1,4 +1,4 @@
-alembic=
+alembic
 aniso8601
 attrs
 bcrypt
