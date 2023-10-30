@@ -4,6 +4,7 @@ from flask_restful import Api, Resource, reqparse
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity  
 from flask_cors import CORS
 from models import db, User, Product, Category, Brand, Invoice, InvoiceProducts
+from flask_restx import Api, Resource, reqparse 
 
 
 app = Flask(__name__)

@@ -4,7 +4,8 @@ attrs
 bcrypt
 blinker
 click
-Flask == 2.2.5
+Fake
+Flask==2.2.5
 Flask-Bcrypt
 Flask-Cors==4.0.0
 Flask-JWT-Extended
@@ -21,10 +22,10 @@ Mako
 MarkupSafe
 PyJWT
 pyrsistent
+python-dateutil
 pytz
 six
 SQLAlchemy
 SQLAlchemy-serializer
 typing_extensions
 Werkzeug
-gunicorn
