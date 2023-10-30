@@ -27,3 +27,4 @@ SQLAlchemy
 SQLAlchemy-serializer
 typing_extensions
 Werkzeug
+gunicorn
