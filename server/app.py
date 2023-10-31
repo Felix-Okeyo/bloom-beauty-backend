@@ -409,6 +409,25 @@ class Categories(Resource):
                 categories.append(category_dict)
         return make_response(jsonify(categories), 200)
     
+    
+class GetClients(Resource):
+    @check_user
+    def get(self):
+        
+        users = []
+        for user in User.query.all():
+            user_dict = {
+                "id": user.id,
+                "first_name": user.first_name,
+                "last_name": user.last_name,
+                "username": user.username,
+                "email": user.email,
+                "telephone":user.telephone,
+                "city_town": user.city_town,
+                "role_id": user.role_id,  
+            }
+            users.append(user_dict)
+        return make_response(jsonify(users), 200) 
 
 #Endpoints
 api.add_resource(Home, '/')
@@ -422,7 +441,7 @@ api.add_resource(BrandsAvailable, '/brands')
 api.add_resource(BrandsById, '/brands/<int:id>')
 api.add_resource(GetProducts, '/products')
 api.add_resource(ProductById, '/products/<int:id>')
-
+api.add_resource(GetClients, '/clients')
 
 if __name__ == '__main__':
     app.run(port=5555)
