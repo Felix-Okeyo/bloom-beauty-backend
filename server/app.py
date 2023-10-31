@@ -4,6 +4,8 @@ from flask_restful import Api, Resource, reqparse
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity  
 from flask_cors import CORS
 from models import db, User, Product, Category, Brand, Invoice, InvoiceProducts
+from flask_restx import Api, Resource, reqparse 
+
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
@@ -16,8 +18,21 @@ migrate = Migrate(app, db)
 api = Api(app)
 CORS(app)
 jwt = JWTManager(app)
+                       
+ 
+def check_user(func):
+    def wrapper(*args, **kwargs):
+        user_id = kwargs.get('id')
+        print(f"Checking user with ID {user_id}")
+        user = User.query.get(user_id)
+        if user and user.role_id == 1:
+            return func(*args, **kwargs)
+        print(f"Unauthorized user with ID {user_id}")
+        raise PermissionError("You are not authorized to perform this operation.")
 
+    return wrapper
 
+                                  
 class Home(Resource):
     def get(self):
         response_message = {
@@ -25,7 +40,7 @@ class Home(Resource):
         }
         return make_response(response_message, 200)
 
-api.add_resource(Home, '/')
+
 
 class SignUpResource(Resource):
     def post(self):
@@ -67,11 +82,11 @@ class SignUpResource(Resource):
             'message': 'User registered successfully',
             'access_token': access_token
         }, 201
-api.add_resource(SignUpResource, '/register')
+
        
 #testing the JWT authentication separately
 class TestJWT(Resource):
-    @jwt_required()
+    
     def get(self):
         current_user = get_jwt_identity()
         return {'user_id': current_user}    
@@ -93,10 +108,11 @@ class LoginResource(Resource):
             return {'access_token': access_token}, 200
         else:
             return {'message': 'Invalid credentials'}, 401
-api.add_resource(LoginResource, '/login')
+
 
 #Admin interface for users management
 class ProfileResource(Resource):
+    
     @jwt_required()
     def get(self, id):
         user = User.query.get_or_404(id)
@@ -110,11 +126,13 @@ class ProfileResource(Resource):
                 "ph_address": user.ph_address,
                 "password": user.password,
                 "telephone": user.telephone,
-                "city_town": user.city_town   
+                "city_town": user.city_town,
+                "role_id": user.role_id
             }
             return make_response(jsonify(user_dict), 200)
         else:
             return make_response(jsonify({"error": "User not found"}),404)
+        
     @jwt_required()
     def put(self, id):
         user = User.query.get_or_404(id)
@@ -138,7 +156,7 @@ class ProfileResource(Resource):
         return {'message': 'User profile deleted successfully'}  
     
 
-api.add_resource(ProfileResource, '/profile/<int:id>')
+
 
 class GetProducts(Resource):
     def get(self):
@@ -156,7 +174,8 @@ class GetProducts(Resource):
             }
             products.append(product_dict)
         return make_response(jsonify(products), 200)
-    @jwt_required()
+    
+    @check_user
     def post(self):
         data = request.get_json()
         
@@ -189,7 +208,6 @@ class GetProducts(Resource):
         #respond with the success message
         return make_response(jsonify(new_product_dict), 200)  
 
-api.add_resource(GetProducts, '/products')
 
 class ProductById(Resource):
     def get(self, id):
@@ -207,7 +225,7 @@ class ProductById(Resource):
             return make_response(jsonify(product_dict), 200)
         else:
             return make_response(jsonify({"error": "Product not found"}),404)
-    @jwt_required()
+    @check_user
     def patch(self, id):
         product = Product.query.filter_by(id=id).first()
         data = request.get_json()
@@ -232,14 +250,14 @@ class ProductById(Resource):
         else:
             return make_response(jsonify({"error": "Product not found"}),404)
         
-    @jwt_required()
+    @check_user
     def delete (self, id):
         product = Product.query.filter_by(id=id).first()
         db.session.delete(product)
         db.session.commit()
         return {'message': 'Product deleted successfully'}
     
-api.add_resource(ProductById, '/products/<int:id>')
+
 
 class BrandsAvailable(Resource):
     def get(self):
@@ -254,7 +272,7 @@ class BrandsAvailable(Resource):
             brands.append(brand_dict)
         return make_response(jsonify(brands), 200)
     
-    @jwt_required()
+    @check_user 
     def post(self):
         data = request.get_json()
         
@@ -280,7 +298,6 @@ class BrandsAvailable(Resource):
         #respond with the success message
         return make_response(jsonify(new_brand_dict), 200)  
 
-api.add_resource(BrandsAvailable, '/brands')
 
 class BrandsById(Resource):
     @jwt_required()
@@ -296,7 +313,7 @@ class BrandsById(Resource):
         else:
             return make_response(jsonify({"error": "Brand not found"}),404)
         
-    @jwt_required()
+    @check_user
     def patch(self, id):
         brand = Brand.query.filter_by(id=id).first()
         data = request.get_json()
@@ -317,22 +334,47 @@ class BrandsById(Resource):
         else:
             return make_response(jsonify({"error": "Brand not found"}),404)
         
-    @jwt_required()
+    @check_user 
     def delete (self, id):
         brand = Brand.query.filter_by(id=id).first()
         db.session.delete(brand)
         db.session.commit()
         return {'message': 'Brand deleted successfully'}
     
-api.add_resource(BrandsById, '/brands/<int:id>')
 
-#get all invoices by Id
+
+#get all invoices 
+class Invoices(Resource):
+    @check_user
+    def get(self):
+        invoices = []
+        
+        for invoice in Invoice.query.all():
+            invoice_dict ={
+                "id": invoice.id,
+                "user_id": invoice.user_id,
+                "created_at": invoice.created_at,
+                "products": [
+                    {
+                        "id": invoice_product.product_rl.id,
+                        "image": invoice_product.product_rl.image,
+                        "product_name": invoice_product.product_rl.p_name,
+                        "price": invoice_product.product_rl.price,
+                        "category": invoice_product.product_rl.category 
+                    }
+                    for invoice_product in invoice.invoice_products
+                ]
+            }
+            invoices.append(invoice_dict)
+        return make_response(jsonify(invoices), 200)
+    
+
+
+#get invoice by ID
 class InvoiceById(Resource):
-    # @jwt_required()
+    @check_user
     def get(self, id):
-        
         invoice = Invoice.query.filter_by(id=id).first()
-        
         if invoice:
             invoice_dict ={
                 "id": invoice.id,
@@ -351,10 +393,35 @@ class InvoiceById(Resource):
             }
             return make_response(jsonify(invoice_dict), 200)
         else:
-            return make_response(jsonify({"Error": "Invoice not found"}), 404)
-              
-api.add_resource(InvoiceById, '/invoices/<int:id>')
+            return make_response(jsonify({"error": "Invoice not found"}),404)
 
+
+
+class Categories(Resource):
+    def get(self):
+        
+        categories = []
+        for category in Category.query.all():
+                category_dict = {
+                    "id": category.id,
+                    "name": category.cat_name
+                }
+                categories.append(category_dict)
+        return make_response(jsonify(categories), 200)
+    
+
+#Endpoints
+api.add_resource(Home, '/')
+api.add_resource(LoginResource, '/login')
+api.add_resource(SignUpResource, '/register')
+api.add_resource(ProfileResource, '/profile/<int:id>')
+api.add_resource(Categories, '/categories')
+api.add_resource(Invoices, '/invoices')
+api.add_resource(InvoiceById, '/invoices/<int:id>')
+api.add_resource(BrandsAvailable, '/brands')
+api.add_resource(BrandsById, '/brands/<int:id>')
+api.add_resource(GetProducts, '/products')
+api.add_resource(ProductById, '/products/<int:id>')
 
 
 if __name__ == '__main__':
