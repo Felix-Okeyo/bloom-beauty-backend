@@ -36,7 +36,7 @@ Installation
 
     bash
 
-git clone git@github.com:Felix-Okeyo/bloom-beauty-frontend.git
+git clone git@github.com:Felix-Okeyo/bloom-beauty-backend.git
 
 Navigate to the project directory:
 
