@@ -64,7 +64,7 @@ class SignUpResource(Resource):
         # Create a new User instance and add it to the database
         new_user = User(
             first_name=args['first_name'],
-            second_name=args['second_name'],
+            last_name = args['last_name'],
             username=args['username'],
             email=args['email'],
             ph_address = args['ph_address'],
@@ -156,27 +156,33 @@ class ProfileResource(Resource):
         return {'message': 'User profile deleted successfully'}  
     
 
-
-
 class GetProducts(Resource):
-    def get(self):
-               
+   def get(self):
         products = []
+
         for product in Product.query.all():
-            product_dict ={
+           
+            category = Category.query.get(product.category)
+            category_name = category.cat_name if category else None
+
+            brand = Brand.query.get(product.brand)
+            brand_name = brand.brand_name if brand else None
+
+            product_dict = {
                 "id": product.id,
                 "image": product.image,
                 "p_name": product.p_name,
                 "description": product.description,
                 "price": product.price,
-                "category": product.category,
-                "brand": product.brand,
+                "category": category_name,  
+                "brand": brand_name,
             }
             products.append(product_dict)
+
         return make_response(jsonify(products), 200)
     
-    @check_user
-    def post(self):
+@check_user
+def post(self):
         data = request.get_json()
         
         #validate the incoming product data by ensuring it has all the required fields in the product instance
