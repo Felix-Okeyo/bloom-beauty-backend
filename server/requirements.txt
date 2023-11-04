@@ -23,7 +23,7 @@ Jinja2
 jsonschema
 Mako
 MarkupSafe
-packagin
+packaging
 pluggy
 PyJWT
 pyrsistent
