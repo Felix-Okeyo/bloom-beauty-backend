@@ -163,14 +163,20 @@ class GetProducts(Resource):
                
         products = []
         for product in Product.query.all():
+            category = Category.query.get(product.category)
+            category_name = category.cat_name if category else None
+
+            brand = Brand.query.get(product.brand)
+            brand_name = brand.brand_name if brand else None
+            
             product_dict ={
                 "id": product.id,
                 "image": product.image,
                 "p_name": product.p_name,
                 "description": product.description,
                 "price": product.price,
-                "category": product.category,
-                "brand": product.brand,
+                "category": category_name,
+                "brand": brand_name,
             }
             products.append(product_dict)
         return make_response(jsonify(products), 200)
@@ -350,6 +356,17 @@ class Invoices(Resource):
         invoices = []
         
         for invoice in Invoice.query.all():
+            user = User.query.get(invoice.user_id)  
+            user_details = {
+                "user_id": user.id,
+                "username": user.username,
+                "email": user.email,
+                "telephone": user.telephone,
+                "ph_address": user.ph_address,
+                "city_town": user.email,
+                   
+            }
+        for invoice in Invoice.query.all():
             invoice_dict ={
                 "id": invoice.id,
                 "user_id": invoice.user_id,
@@ -368,7 +385,32 @@ class Invoices(Resource):
             invoices.append(invoice_dict)
         return make_response(jsonify(invoices), 200)
     
-
+    @jwt_required()
+    def post (self):
+        data = request.get_json()
+        
+        #create a new invoice instance
+        new_invoice = Invoice(
+            user_id = data['user_id'],
+            product_id = data['product_id'],
+            quantity = data['quantity'],
+            cost = data['cost'],
+            created_at = data['created_at']
+        )
+        new_invoice_dict = {
+            "id": new_invoice.id,
+            "user_id": new_invoice.user_id,
+            "product_id": new_invoice.product_id,
+            "quantity": new_invoice.quantity,
+            "cost": new_invoice.cost,
+            "created_at": new_invoice.created_at
+        }  
+        
+        db.session.add(new_invoice)
+        db.session.commit()
+        
+        return make_response(jsonify(new_invoice_dict), 200)
+      
 
 #get invoice by ID
 class InvoiceById(Resource):
