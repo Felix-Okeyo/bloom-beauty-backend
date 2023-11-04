@@ -64,7 +64,7 @@ class SignUpResource(Resource):
         # Create a new User instance and add it to the database
         new_user = User(
             first_name=args['first_name'],
-            second_name=args['second_name'],
+            last_name=args['last_name'],
             username=args['username'],
             email=args['email'],
             ph_address = args['ph_address'],
