@@ -5,6 +5,7 @@ bcrypt
 blinker
 click
 exceptiongroup
+importlib-metadata
 Faker
 Flask==2.2.5
 Flask-Bcrypt
